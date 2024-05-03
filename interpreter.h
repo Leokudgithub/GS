@@ -7,60 +7,74 @@
 #include <string>
 #include <iostream>
 #include <map>
-inline std::map<std::string, int> intVar;
+std::map<std::string, int> variables;
+inline void var(std::string name, int value)
+{
+    variables[name] = value;
+}
 inline void print(std::string arg)
 {
-    if (intVar.find(arg) != intVar.end())
+    if (variables.find(arg)!=variables.end())
     {
-        std::cout << intVar[arg] << " <- var" << std::endl;
+        std::cout << variables[arg];
     }
-    std::cout << std::stoi(arg) << " <- num" << std::endl;
-}
-inline void create(std::string key, std::string value)
-{
-    intVar[key] == std::stoi(value);
-}
-inline void handle(std::string line)
-{
-    if(line.substr(0, 5) == "print")
+    else
     {
-        std::string printArg;
-        if(line[std::size(line)-1] == ')')
+        std::cout << arg;
+    }
+}
+inline void handle(std::string codeString)
+{
+    //std::cout << "handle" << std::endl;
+    if (codeString.substr(0, 5) == "print")
+    // print statement; print x => x
+    {
+        //std::cout << "printing" << std::endl;
+        int len = std::size(codeString);
+        std::string arg;
+        if(codeString[len-1] == ')')
         {
-            //print(123)
-            printArg = line.substr(6, std::size(line)-3);
+            arg = codeString.substr(6, len - 7);
+            //std::cout << ')' << std::endl;
         }
         else
         {
-            //print 123
-            printArg = line.substr(6, std::size(line)-1);
+            arg = codeString.substr(6);
+            //std::cout << 'space' << std::endl;
         }
-        print(printArg);
+        print(arg);
     }
-    else if(line.substr(0, 6) == "create")
+    else if(codeString.substr(0, 3) == "var")
     {
-        std::string createArg;
-        if(line[std::size(line)-2 == ')'])
+        std::string args = codeString.substr(4);
+        std::string name, value;
+        bool isAfter = false;
+        for (const char sym: args)
         {
-            //create(key=123)
-            createArg = line.substr(7, std::size(line)-2);
+            if (sym=='=')
+            {
+                isAfter = true;
+                continue;
+            }
+            if (sym == ' ')
+            {
+                continue;
+            }
+            if (isAfter)
+            {
+                value+=sym;
+            }
+            else
+            {
+                name+=sym;
+            }
         }
-        else
-        {
-            //create
-            createArg = line.substr(7, std::size(line)-1);
-        }
-        std::string delimiter = "=";
-
-        size_t pos = createArg.find(delimiter);
-        std::string key = createArg.substr(0, pos);
-        std::string value = createArg.substr(pos + 1);
-        std::cout << key << " " << value << std::endl;
-        create(key, value);
+        int intval = std::stoi(value);
+        var(name, intval);
     }
-    else{
-        //exception
-        std::cout << line << " <- exception" << std::endl;
+    else if(codeString.substr(0, 7) == "newline")
+    {
+        std::cout << "\n";
     }
 }
 
