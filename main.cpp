@@ -12,7 +12,7 @@ int main() {
     int line = 0; //interpreting line
     while (line < std::size(code))
     {
-        handle(code[line]);
+        handle(code[line], line);
         line++;
     }
     return 0;
