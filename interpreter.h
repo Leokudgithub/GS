@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 #include <map>
+inline int line_num = 0;
 inline std::map<std::string, int> variables;
 inline void var(std::string name, std::string value)
 {
@@ -273,7 +274,7 @@ inline void handle(std::string codeString, int line)
     else
     //exception
     {
-        std::cout << line << " line exception" << std::endl;
+        std::cerr << line+1 << " line exception" << std::endl;
     }
 }
 

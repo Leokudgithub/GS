@@ -5,7 +5,7 @@
 #include "interpreter.h"
 using namespace std;
 
-int main() {
+int main(int argc, char** argv) {
     std::string input;
 
     while (true) {
@@ -30,8 +30,6 @@ int main() {
                 code.push_back(line);
             }
             file.close(); // закрываем файл
-
-            int line_num = 0; // индекс строки для интерпретации
             while (line_num < code.size()) {
                 handle(code[line_num], line_num);
                 line_num++;
