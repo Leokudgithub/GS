@@ -71,19 +71,19 @@ inline void sub(std::string var, std::string number)
 }
 inline void div(std::string var, std::string number)
 {
-    if(std::stoi(number) == 0)
+    if (variables.find(number) != variables.end())
     {
-        std::cout << "ZeroDivisionError" << std::endl;
+        variables[var]/=variables[number];
     }
     else
     {
-        if (variables.find(number) != variables.end())
+        if(std::stoi(number) == 0)
         {
-            variables[var]+=variables[number];
+            std::cout << "ZeroDivisionError" << std::endl;
         }
         else
         {
-            variables[var]+=std::stoi(number);
+            variables[var]/=std::stoi(number);
         }
     }
 }
@@ -257,7 +257,7 @@ inline void handle(std::string codeString, int line)
                 name+=sym;
             }
         }
-        mult(name, value);
+        div(name, value);
     }
     else if(codeString.substr(0, 2) == "//"){}
     else
