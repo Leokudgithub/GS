@@ -9,7 +9,7 @@
 #include <map>
 inline int line_num = 0;
 inline std::map<std::string, int> variables;
-inline void var(std::string name, std::string value)
+inline void intvar (std::string name, std::string value)
 {
     if (variables.find(value) != variables.end())
     {
@@ -123,8 +123,8 @@ inline void handle(std::string codeString, int line)
         get(arg);
 
     }
-    else if(codeString.substr(0, 3) == "var")
-        //var a = 10
+    else if(codeString.substr(0, 3) == "int")
+        //int a = 10
     {
         std::string args = codeString.substr(4);
         std::string name, value;
@@ -149,10 +149,14 @@ inline void handle(std::string codeString, int line)
                 name+=sym;
             }
         }
-        var(name, value);
+        intvar(name, value);
     }
-    else if(codeString.substr(0, 7) == "newline" || codeString.substr(0, 3) == "nln")
+    else if(codeString.substr(0, 7) == "newline")
         //newline
+    {
+        std::cout << "\n";
+    }
+    else if(codeString.substr(0, 3) == "nln")
     {
         std::cout << "\n";
     }
@@ -270,7 +274,9 @@ inline void handle(std::string codeString, int line)
         }
         div(name, value);
     }
-    else if(codeString.substr(0, 2) == "//"){}
+    else if(codeString.substr(0, 2) == "//")
+        //just for comment
+        {}
     else
     //exception
     {
