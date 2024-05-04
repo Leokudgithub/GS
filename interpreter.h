@@ -90,7 +90,7 @@ inline void div(std::string var, std::string number)
 inline void handle(std::string codeString, int line)
 {
     //std::cout << "handle" << std::endl;
-    if (codeString.substr(0, 5) == "print")
+    if (codeString.substr(0, 5) == "print" && codeString.substr(5, 2) != "ln")
         // print statement; print x => x
     {
         //std::cout << "printing" << std::endl;
@@ -107,6 +107,13 @@ inline void handle(std::string codeString, int line)
             //std::cout << 'space' << std::endl;
         }
         print(arg);
+    }
+    else if(codeString.substr(0, 7) == "println")
+        //println value
+    {
+        std::string arg = codeString.substr(8);
+        print(arg);
+        std::cout << "\n";
     }
     else if (codeString.substr(0, 3) == "get")
         //get value
@@ -143,7 +150,7 @@ inline void handle(std::string codeString, int line)
         }
         var(name, value);
     }
-    else if(codeString.substr(0, 7) == "newline")
+    else if(codeString.substr(0, 7) == "newline" || codeString.substr(0, 3) == "nln")
         //newline
     {
         std::cout << "\n";
@@ -177,6 +184,7 @@ inline void handle(std::string codeString, int line)
         add(name, value);
     }
     else if(codeString.substr(0, 4) == "mult")
+        //mult value1*value2
     {
         std::string args = codeString.substr(5);
         std::string name, value;
@@ -204,6 +212,7 @@ inline void handle(std::string codeString, int line)
         mult(name, value);
     }
     else if(codeString.substr(0, 3) == "sub")
+        //sub value1-value2
     {
         {
             std::string args = codeString.substr(4);
@@ -233,6 +242,7 @@ inline void handle(std::string codeString, int line)
         }
     }
     else if(codeString.substr(0, 3) == "div")
+        //div value1/value2
     {
         std::string args = codeString.substr(4);
         std::string name, value;
