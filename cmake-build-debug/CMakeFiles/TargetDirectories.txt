@@ -1,3 +1,0 @@
-C:/Users/oliak/CLionProjects/GS/cmake-build-debug/CMakeFiles/GS.dir
-C:/Users/oliak/CLionProjects/GS/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/oliak/CLionProjects/GS/cmake-build-debug/CMakeFiles/rebuild_cache.dir
