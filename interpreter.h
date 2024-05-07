@@ -9,7 +9,7 @@
 #include <map>
 inline int line_num = 0;
 inline std::map<std::string, int> variables;
-inline void intvar (std::string name, std::string value)
+inline void intvar (const std::string &name, const std::string &value)
 {
     if (variables.find(value) != variables.end())
     {
@@ -20,7 +20,7 @@ inline void intvar (std::string name, std::string value)
         variables[name] = std::stoi(value);
     }
 }
-inline void print(std::string arg)
+inline void print(const std::string &arg)
 {
     if (variables.find(arg)!=variables.end())
     {
@@ -33,11 +33,11 @@ inline void print(std::string arg)
         std::cout << arg;
     }
 }
-inline void get(std::string arg)
+inline void get(const std::string &arg)
 {
     std::cin >> variables[arg];
 }
-inline void add(std::string var, std::string number)
+inline void add(const std::string &var, const std::string &number)
 {
     if (variables.find(number) != variables.end())
     {
@@ -48,7 +48,7 @@ inline void add(std::string var, std::string number)
         variables[var]+=std::stoi(number);
     }
 }
-inline void mult(std::string var, std::string number)
+inline void mult(const std::string &var, const std::string &number)
 {
     if (variables.find(number) != variables.end())
     {
@@ -59,7 +59,7 @@ inline void mult(std::string var, std::string number)
         variables[var]*=std::stoi(number);
     }
 }
-inline void sub(std::string var, std::string number)
+inline void sub(const std::string &var, const std::string &number)
 {
     if (variables.find(number) != variables.end())
     {
@@ -70,7 +70,7 @@ inline void sub(std::string var, std::string number)
         variables[var]-=std::stoi(number);
     }
 }
-inline void div(std::string var, std::string number)
+inline void div(const std::string &var, const std::string &number)
 {
     if (variables.find(number) != variables.end())
     {
@@ -88,7 +88,7 @@ inline void div(std::string var, std::string number)
         }
     }
 }
-inline void handle(std::string codeString, int line)
+inline void handle(const std::string &codeString, int line)
 {
     //std::cout << "handle" << std::endl;
     if (codeString.substr(0, 5) == "print" && codeString.substr(5, 2) != "ln")
@@ -151,12 +151,7 @@ inline void handle(std::string codeString, int line)
         }
         intvar(name, value);
     }
-    else if(codeString.substr(0, 7) == "newline")
-        //newline
-    {
-        std::cout << "\n";
-    }
-    else if(codeString.substr(0, 3) == "nln")
+    else if(codeString.substr(0, 3) == "nln" or codeString.substr(0,7) == "newline")
     {
         std::cout << "\n";
     }
