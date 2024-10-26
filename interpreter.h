@@ -7,276 +7,171 @@
 #include <string>
 #include <iostream>
 #include <map>
-inline int line_num = 0;
-inline std::map<std::string, int> variables;
-inline void intvar (const std::string &name, const std::string &value)
-{
-    if (variables.find(value) != variables.end())
-    {
-        variables[name] = variables[value];
-    }
-    else
-    {
-        variables[name] = std::stoi(value);
-    }
-}
-inline void print(const std::string &arg)
-{
-    if (variables.find(arg)!=variables.end())
-    {
-        //print a
-        std::cout << variables[arg];
-    }
-    else
-    {
-        //print 123
-        std::cout << arg;
-    }
-}
-inline void get(const std::string &arg)
-{
-    std::cin >> variables[arg];
-}
-inline void add(const std::string &var, const std::string &number)
-{
-    if (variables.find(number) != variables.end())
-    {
-        variables[var]+=variables[number];
-    }
-    else
-    {
-        variables[var]+=std::stoi(number);
-    }
-}
-inline void mult(const std::string &var, const std::string &number)
-{
-    if (variables.find(number) != variables.end())
-    {
-        variables[var]*=variables[number];
-    }
-    else
-    {
-        variables[var]*=std::stoi(number);
-    }
-}
-inline void sub(const std::string &var, const std::string &number)
-{
-    if (variables.find(number) != variables.end())
-    {
-        variables[var]-=variables[number];
-    }
-    else
-    {
-        variables[var]-=std::stoi(number);
-    }
-}
-inline void div(const std::string &var, const std::string &number)
-{
-    if (variables.find(number) != variables.end())
-    {
-        variables[var]/=variables[number];
-    }
-    else
-    {
-        if(std::stoi(number) == 0)
+#include <algorithm>
+#include <bits/stdc++.h>
+using
+std::map,
+std::string,
+std::vector,
+std::cout,
+std::cin,
+std::pair,
+std::stoi,
+std::find,
+std::cerr,
+std::endl;
+class Interpreter {
+private:
+    //hashmaps of variables
+    static map<string, int> ints;
+    static map<string, char> chars;
+    static map<string, float> floats;
+    static map<string, double> doubles;
+    static map<string, long long> long_longs;
+    //vector of variable names
+    static vector<string> variables;
+    //returns a pair of name and value split by '='
+    static pair<string, string> split(
+        const string &s)
         {
-            std::cout << "ZeroDivisionError" << std::endl;
+        pair<string, string> result;
+        bool is_after = false;
+        for(const auto &c : s) {
+            if(c == '=') {
+                is_after = true;
+            }
+            else {
+                if(is_after and c!=' ') {
+                    result.second = result.second + c;
+                }
+                else if(!is_after and c!=' ') {
+                    result.first = result.first + c;
+                }
+            }
         }
-        else
-        {
-            variables[var]/=std::stoi(number);
-        }
+        return result;
     }
-}
-inline void handle(const std::string &codeString, int line)
-{
-    //std::cout << "handle" << std::endl;
-    if (codeString.substr(0, 5) == "print" && codeString.substr(5, 2) != "ln")
-        // print statement; print x => x
-    {
-        //std::cout << "printing" << std::endl;
-        unsigned long long const len = std::size(codeString);
-        std::string arg;
-        if(codeString[len-1] == ')')
-        {
-            arg = codeString.substr(6, len - 7);
-            //std::cout << ')' << std::endl;
-        }
-        else
-        {
-            arg = codeString.substr(6);
-            //std::cout << 'space' << std::endl;
-        }
-        print(arg);
+    static bool define_check(const string &s) {
+        return std::find(variables.begin(), variables.end(), s) != variables.end();
     }
-    else if(codeString.substr(0, 7) == "println")
-        //println value
-    {
-        std::string arg = codeString.substr(8);
-        print(arg);
-        std::cout << "\n";
-    }
-    else if (codeString.substr(0, 3) == "get")
-        //get value
-    {
-        std::string arg = codeString.substr(4);
-        get(arg);
+public:
+    int current_line_number = 0;
+    //function to interpret code, first string is string to interpret, second int is number of string
+    static void interpret(
+        const std::string &codeString,
+        int line_num)
+        {
+        //int variable creating
+        if(codeString.substr(0, 3) == "int" || codeString.substr(0, 3) == "i32") {
+            string name_and_value = codeString.substr(4);
+            pair<string, string> pi = split(name_and_value);
+            if(define_check(pi.first)) {
+                cerr << "Variable " << pi.first << " already defined" << endl;
+                exit(1);
+            }
+            variables.push_back(pi.first);
+            ints[pi.first] = stoi(pi.second);
 
-    }
-    else if(codeString.substr(0, 3) == "int")
-        //int a = 10
-    {
-        std::string args = codeString.substr(4);
-        std::string name, value;
-        bool isAfterEqualSign = false;
-        for (const char sym: args)
-        {
-            if (sym=='=')
-            {
-                isAfterEqualSign = true;
-                continue;
+        }
+        //char variable creating
+        else if(codeString.substr(0, 4) == "char") {
+            string name_and_value = codeString.substr(5);
+            pair<string, string> pc = split(name_and_value);
+            if(define_check(pc.first)) {
+                cerr << "Variable " << pc.first << " already defined" << endl;
+                exit(1);
             }
-            if (sym == ' ')
-            {
-                continue;
-            }
-            if (isAfterEqualSign)
-            {
-                value+=sym;
-            }
-            else
-            {
-                name+=sym;
+            else {
+                chars[pc.first] = pc.second[0];
+                variables.push_back(pc.first);
             }
         }
-        intvar(name, value);
-    }
-    else if(codeString.substr(0, 3) == "nln" or codeString.substr(0,7) == "newline")
-    {
-        std::cout << "\n";
-    }
-    else if(codeString.substr(0, 3) == "add")
-        //add a+5
-    {
-        std::string args = codeString.substr(4);
-        std::string name, value;
-        bool isAfter = false;
-        for (const char sym: args)
-        {
-            if (sym=='+')
-            {
-                isAfter = true;
-                continue;
+        //float variable creating
+        else if (codeString.substr(0, 3) == "f32") {
+            string name_and_value = codeString.substr(4);
+            pair<string, string> pf = split(name_and_value);
+            if(define_check(pf.first)) {
+                cerr << "Variable " << pf.first << " already defined" << endl;
+                exit(1);
             }
-            if (sym == ' ')
-            {
-                continue;
-            }
-            if (isAfter)
-            {
-                value+=sym;
-            }
-            else
-            {
-                name+=sym;
+            else {
+                floats[pf.first] = stof(pf.second);
+                variables.push_back(pf.first);
             }
         }
-        add(name, value);
-    }
-    else if(codeString.substr(0, 4) == "mult")
-        //mult value1*value2
-    {
-        std::string args = codeString.substr(5);
-        std::string name, value;
-        bool isAfter = false;
-        for (const char sym: args)
-        {
-            if (sym=='*')
-            {
-                isAfter = true;
-                continue;
-            }
-            if (sym == ' ')
-            {
-                continue;
-            }
-            if (isAfter)
-            {
-                value+=sym;
-            }
-            else
-            {
-                name+=sym;
-            }
-        }
-        mult(name, value);
-    }
-    else if(codeString.substr(0, 3) == "sub")
-        //sub value1-value2
-    {
-        {
-            std::string args = codeString.substr(4);
-            std::string name, value;
-            bool isAfter = false;
-            for (const char sym: args)
-            {
-                if (sym=='-')
-                {
-                    isAfter = true;
-                    continue;
-                }
-                if (sym == ' ')
-                {
-                    continue;
-                }
-                if (isAfter)
-                {
-                    value+=sym;
-                }
-                else
-                {
-                    name+=sym;
+        //double variable creating
+        else if (codeString.substr(0, 3) == "f64") {
+            string name_and_value = codeString.substr(4);
+            pair<string, string> pd = split(name_and_value);
+            for(const auto& el: variables) {
+                if(pd.first == el) {
+                    cerr << "Variable " << el << " already defined" << endl;
+                    exit(1);
                 }
             }
-            sub(name, value);
-        }
-    }
-    else if(codeString.substr(0, 3) == "div")
-        //div value1/value2
-    {
-        std::string args = codeString.substr(4);
-        std::string name, value;
-        bool isAfter = false;
-        for (const char sym: args)
-        {
-            if (sym=='/')
-            {
-                isAfter = true;
-                continue;
+            if(define_check(pd.first)) {
+                cerr << "Variable " << pd.first << " already defined" << endl;
+                exit(1);
             }
-            if (sym == ' ')
-            {
-                continue;
-            }
-            if (isAfter)
-            {
-                value+=sym;
-            }
-            else
-            {
-                name+=sym;
+            else {
+                doubles[pd.first] = stod(pd.second);
+                variables.push_back(pd.first);
             }
         }
-        div(name, value);
+        //long long variable creating
+        else if (codeString.substr(0, 3) == "i64") {
+            string name_and_value = codeString.substr(4);
+            pair<string, string> pi64 = split(name_and_value);
+            for(const auto& el: variables) {
+                if(pi64.first == el) {
+                    cerr << "Variable " << el << " already defined" << endl;
+                    exit(1);
+                }
+            }
+            if(define_check(pi64.first)) {
+                cerr << "Variable " << pi64.first << " already defined" << endl;
+                exit(1);
+            }
+            else {
+                long_longs[pi64.first] = stoll(pi64.second);
+                variables.push_back(pi64.first);
+            }
+        }
+
+        //printing value or any argument
+        else if (codeString.substr(0, 5) == "print") {
+            const auto name = codeString.substr(6);
+            if(ints.find(name) != ints.end()) {
+                cout << ints[name];
+            }
+            else if(chars.find(name) != chars.end()) {
+                cout << chars[name];
+            }
+            else if(floats.find(name) != floats.end()) {
+                cout << floats[name];
+            }
+            else if(doubles.find(name) != doubles.end()) {
+                cout << doubles[name];
+            }
+            else if(long_longs.find(name) != long_longs.end()) {
+                cout << long_longs[name];
+            }
+            else {
+                cout << "name";
+            }
+
+        }
+        else if(codeString.substr(0, 3) == "nln"){
+            cout << endl;
+        }
+        else if(codeString.substr(0, 2) == "//") {
+            //
+        }
+        else{
+            cerr << "Error in string" << codeString << line_num++ << std::endl;
     }
-    else if(codeString.substr(0, 2) == "//")
-        //just for comment
-        {}
-    else
-    //exception
-    {
-        std::cerr << line+1 << " line exception" << std::endl;
-    }
-}
+
+    };
+};
 
 #endif //INTERPRETER_H
