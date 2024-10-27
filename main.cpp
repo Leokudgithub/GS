@@ -28,17 +28,20 @@ int main(int argc, char* argv[]) {
         }
         file.close();
         while (interpreter.current_line_number < code.size()) {
-            Interpreter::interpret(code[interpreter.current_line_number], interpreter.current_line_number);
+            //Interpreter::interpret(code[interpreter.current_line_number], interpreter.current_line_number);
             interpreter.current_line_number++;
         }
     }
     else {
         cout << "testing mode \n";
-        Interpreter::interpret("int variable = 5", 1);
-        Interpreter::interpret("print variable", 2);
-        Interpreter::interpret("nln", 3);
-        Interpreter::interpret("int variable = 7", 4);
-
+        vector<string> test = Interpreter::tokenize("a+=b");
+        vector<string> test1 = Interpreter::tokenize("a += b");
+        vector<string> test2 = Interpreter::tokenize("a + = b");
+        Interpreter::interpret("print \"pi is: \"", 1);
+        Interpreter::interpret("float Pi = 3.14", 2);
+        Interpreter::interpret("print Pi", 3);
+        Interpreter::interpret("float Pi2 = 15", 4);
+        Interpreter::interpret("print Pi2 nln", 5);
 
     }
     system("pause");

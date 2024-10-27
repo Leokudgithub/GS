@@ -31,116 +31,161 @@ private:
     //vector of variable names
     static vector<string> variables;
     //returns a pair of name and value split by '='
-    static pair<string, string> split(
-        const string &s)
-        {
-        pair<string, string> result;
-        bool is_after = false;
-        for(const auto &c : s) {
-            if(c == '=') {
-                is_after = true;
-            }
-            else {
-                if(is_after and c!=' ') {
-                    result.second = result.second + c;
-                }
-                else if(!is_after and c!=' ') {
-                    result.first = result.first + c;
-                }
-            }
-        }
-        return result;
-    }
+
     static bool define_check(const string &s) {
         return std::find(variables.begin(), variables.end(), s) != variables.end();
     }
+
 public:
+    static vector<string> tokenize(const string &s) {
+        vector<string> tokens;
+        string curr;
+        bool insideQuotes = false;
+
+        for(char c : s) {
+            if (c == '\"') {
+                insideQuotes = !insideQuotes;
+                if (!insideQuotes) {
+                    tokens.emplace_back(curr);
+                    curr.clear();
+                }
+                continue;
+            }
+
+            if (insideQuotes) {
+                curr += c;
+            } else {
+                switch(c) {
+                    case ' ':
+                        if (!curr.empty()) {
+                            tokens.emplace_back(curr);
+                            curr.clear();
+                        }
+                    break;
+                    case '=':
+                    case '{':
+                    case '}':
+                    case '[':
+                    case ']':
+                    case '>':
+                    case '<':
+                    case '+':
+                    case '-':
+                    case '*':
+                    case '/':
+                    case '%':
+                    case '\'':
+                        if (!curr.empty()) {
+                            tokens.emplace_back(curr);
+                            curr.clear();
+                        }
+                    tokens.emplace_back(1, c);
+                    break;
+                    default:
+                        curr += c;
+                    break;
+                }
+            }
+        }
+
+        // Добавляем последний токен, если он не пустой
+        if (!curr.empty()) {
+            tokens.emplace_back(curr);
+        }
+
+        return tokens;
+    }
+
+
+
+
     int current_line_number = 0;
+
+
     //function to interpret code, first string is string to interpret, second int is number of string
     static void interpret(
         const std::string &codeString,
         int line_num)
         {
+        vector<string> tokens = tokenize(codeString);
         //int variable creating
-        if(codeString.substr(0, 3) == "int" || codeString.substr(0, 3) == "i32") {
-            string name_and_value = codeString.substr(4);
-            pair<string, string> pi = split(name_and_value);
+        if((tokens[0] == "int" || tokens[0] == "i32") && tokens[1] != "[") {
+            pair<string, string> pair_define = {tokens[1], tokens[3]};
+            if(define_check(pair_define.first)) {
+                cerr << "Variable " << pair_define.first << " already defined" << endl;
+                exit(1);
+            }
+            variables.push_back(pair_define.first);
+            if(define_check(pair_define.second)) {
+                ints[pair_define.first] = ints[pair_define.second];
+            }
+            else {
+                ints[pair_define.first] = stoi(pair_define.second);
+            }
+        }
+        //char variable creating
+        else if((tokens[0] == "char" || tokens[0] == "byte") && tokens[1] != "[" && tokens[2] == "\'"  && tokens[4] == "\'") {
+            pair<string, string> pair_define = {tokens[1], tokens[4]};
+            if(define_check(pair_define.first)) {
+                cerr << "Variable " << pair_define.first << " already defined" << endl;
+                exit(1);
+            }
+            variables.push_back(pair_define.first);
+            if(define_check(pair_define.second)) {
+                chars[pair_define.first] = chars[pair_define.second];
+            }
+            else {
+                chars[pair_define.first] = pair_define.second[0];
+            }
+        }
+        //float variable creating
+        else if((tokens[0] == "float" || tokens[0] == "f32") && tokens[1] != "[") {
+            pair<string, string> pi = {tokens[1], tokens[3]};
             if(define_check(pi.first)) {
                 cerr << "Variable " << pi.first << " already defined" << endl;
                 exit(1);
             }
             variables.push_back(pi.first);
-            ints[pi.first] = stoi(pi.second);
-
-        }
-        //char variable creating
-        else if(codeString.substr(0, 4) == "char") {
-            string name_and_value = codeString.substr(5);
-            pair<string, string> pc = split(name_and_value);
-            if(define_check(pc.first)) {
-                cerr << "Variable " << pc.first << " already defined" << endl;
-                exit(1);
+            if(define_check(pi.second)) {
+                floats[pi.first] = floats[pi.second];
             }
             else {
-                chars[pc.first] = pc.second[0];
-                variables.push_back(pc.first);
-            }
-        }
-        //float variable creating
-        else if (codeString.substr(0, 3) == "f32") {
-            string name_and_value = codeString.substr(4);
-            pair<string, string> pf = split(name_and_value);
-            if(define_check(pf.first)) {
-                cerr << "Variable " << pf.first << " already defined" << endl;
-                exit(1);
-            }
-            else {
-                floats[pf.first] = stof(pf.second);
-                variables.push_back(pf.first);
+                floats[pi.first] = stof(pi.second);
             }
         }
         //double variable creating
-        else if (codeString.substr(0, 3) == "f64") {
-            string name_and_value = codeString.substr(4);
-            pair<string, string> pd = split(name_and_value);
-            for(const auto& el: variables) {
-                if(pd.first == el) {
-                    cerr << "Variable " << el << " already defined" << endl;
-                    exit(1);
-                }
-            }
-            if(define_check(pd.first)) {
-                cerr << "Variable " << pd.first << " already defined" << endl;
+        else if((tokens[0] == "double" || tokens[0] == "f64") && tokens[1] != "[") {
+            pair<string, string> pi = {tokens[1], tokens[3]};
+            if(define_check(pi.first)) {
+                cerr << "Variable " << pi.first << " already defined" << endl;
                 exit(1);
             }
+            variables.push_back(pi.first);
+            if(define_check(pi.second)) {
+                doubles[pi.first] = doubles[pi.second];
+            }
             else {
-                doubles[pd.first] = stod(pd.second);
-                variables.push_back(pd.first);
+                doubles[pi.first] = stod(pi.second);
             }
         }
         //long long variable creating
-        else if (codeString.substr(0, 3) == "i64") {
-            string name_and_value = codeString.substr(4);
-            pair<string, string> pi64 = split(name_and_value);
-            for(const auto& el: variables) {
-                if(pi64.first == el) {
-                    cerr << "Variable " << el << " already defined" << endl;
-                    exit(1);
-                }
-            }
-            if(define_check(pi64.first)) {
-                cerr << "Variable " << pi64.first << " already defined" << endl;
+        else if((tokens[0] == "int" || tokens[0] == "i32") && tokens[1] != "[") {
+            pair<string, string> pi = {tokens[1], tokens[3]};
+            if(define_check(pi.first)) {
+                cerr << "Variable " << pi.first << " already defined" << endl;
                 exit(1);
             }
+            variables.push_back(pi.first);
+            if(define_check(pi.second)) {
+                long_longs[pi.first] = long_longs[pi.second];
+            }
             else {
-                long_longs[pi64.first] = stoll(pi64.second);
-                variables.push_back(pi64.first);
+                long_longs[pi.first] = stoll(pi.second);
             }
         }
-
         //printing value or any argument
-        else if (codeString.substr(0, 5) == "print") {
-            const auto name = codeString.substr(6);
+        else if (tokens[0] == "print") {
+            const auto& name = tokens[1];
             if(ints.find(name) != ints.end()) {
                 cout << ints[name];
             }
@@ -157,21 +202,23 @@ public:
                 cout << long_longs[name];
             }
             else {
-                cout << "name";
+                cout << name;
             }
+        }
 
-        }
-        else if(codeString.substr(0, 3) == "nln"){
-            cout << endl;
-        }
+        //for nln
         else if(codeString.substr(0, 2) == "//") {
             //
         }
         else{
             cerr << "Error in string" << codeString << line_num++ << std::endl;
-    }
+        }
+        if(tokens[0] == "nln" || tokens[tokens.size()-1] == "nln") {
+            cout << endl;
+        }
 
-    };
+    }
 };
+
 
 #endif //INTERPRETER_H
