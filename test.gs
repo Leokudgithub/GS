@@ -1,4 +1,3 @@
-get a
-get b
-add a+b
-println a
+float Pi = 3.14
+print Pi
+//3.14
