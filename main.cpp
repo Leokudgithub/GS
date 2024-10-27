@@ -37,11 +37,10 @@ int main(int argc, char* argv[]) {
         vector<string> test = Interpreter::tokenize("a+=b");
         vector<string> test1 = Interpreter::tokenize("a += b");
         vector<string> test2 = Interpreter::tokenize("a + = b");
-        Interpreter::interpret("print \"pi is: \"", 1);
-        Interpreter::interpret("float Pi = 3.14", 2);
-        Interpreter::interpret("print Pi", 3);
-        Interpreter::interpret("float Pi2 = 15", 4);
-        Interpreter::interpret("print Pi2 nln", 5);
+        Interpreter::interpret("int a", 1);
+        Interpreter::interpret("get a", 2);
+        Interpreter::interpret("print a", 3);
+
 
     }
     system("pause");
