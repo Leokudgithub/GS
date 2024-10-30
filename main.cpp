@@ -34,13 +34,25 @@ int main(int argc, char* argv[]) {
     }
     else {
         cout << "testing mode \n";
-        vector<string> test = Interpreter::tokenize("a+=b");
-        vector<string> test1 = Interpreter::tokenize("a += b");
         vector<string> test2 = Interpreter::tokenize("a + = b");
-        Interpreter::interpret("int a", 1);
-        Interpreter::interpret("get a", 2);
-        Interpreter::interpret("print a", 3);
-
+        Interpreter::interpret("print \"Calculator\"nln", 1);
+        Interpreter::interpret("print \"enter 2 numbers:\" ", 1);
+        Interpreter::interpret("float a", 1);
+        Interpreter::interpret("float b", 2);
+        Interpreter::interpret("get a", 3);
+        Interpreter::interpret("get b", 4);
+        Interpreter::interpret("float sum", 5);
+        Interpreter::interpret("float sub", 5);
+        Interpreter::interpret("float mult", 5);
+        Interpreter::interpret("float div", 5);
+        Interpreter::interpret("sum = a + b", 5);
+        Interpreter::interpret("sub = a - b", 5);
+        Interpreter::interpret("mult = a * b", 5);
+        Interpreter::interpret("div = a / b", 5);
+        Interpreter::interpret("print sum nln", 5);
+        Interpreter::interpret("print sub nln", 5);
+        Interpreter::interpret("print mult nln", 5);
+        Interpreter::interpret("print div nln", 5);
 
     }
     system("pause");
