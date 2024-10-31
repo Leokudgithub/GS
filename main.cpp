@@ -12,6 +12,8 @@ map<string, float> Interpreter::floats;
 map<string, double> Interpreter::doubles;
 map<string, long long> Interpreter::long_longs;
 vector<string> Interpreter::variables;
+map<string, int> Interpreter::goto_points;
+int Interpreter::current_line_number;
 int main(int argc, char* argv[]) {
     if(argc == 3 && strcmp(argv[1], "run") == 0)
     {
@@ -27,21 +29,28 @@ int main(int argc, char* argv[]) {
             code.push_back(line);
         }
         file.close();
-        while (interpreter.current_line_number < code.size()) {
-            //Interpreter::interpret(code[interpreter.current_line_number], interpreter.current_line_number);
-            interpreter.current_line_number++;
+        while (Interpreter::current_line_number < code.size()) {
+            Interpreter::interpret(code[Interpreter::current_line_number], Interpreter::current_line_number);
+            Interpreter::current_line_number++;
         }
     }
     else {
         cout << "testing mode \n";
-        Interpreter::interpret("float a", 1);
-        Interpreter::interpret("float b", 1);
-        Interpreter::interpret("get a", 1);
-        Interpreter::interpret("get b", 1);
-        Interpreter::interpret("float c", 1);
-        Interpreter::interpret("c = a == b", 1);
-        Interpreter::interpret("print c nln", 1);
-
+        vector<string> code = {
+            "*p",
+            "i64 a",
+            "i64 b",
+            "get a",
+            "get b",
+            "i64 c",
+            "c = a + b",
+            "out c nln",
+            "~p"
+        };
+        while (Interpreter::current_line_number < code.size()) {
+            Interpreter::interpret(code[Interpreter::current_line_number], Interpreter::current_line_number);
+            Interpreter::current_line_number++;
+        }
 
     }
     system("pause");

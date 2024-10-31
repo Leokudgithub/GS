@@ -32,6 +32,7 @@ class Interpreter {
     static map<string, vector<long long>> longlongarray;
     static map<string, vector<float>> floatarray;
     static map<string, vector<double>> doublearray;
+    static map<string, int> goto_points;
     //vector of variable names
     static vector<string> variables;
     //check is variable defined
@@ -609,6 +610,7 @@ public:
                     case '?':
                     case '|':
                     case '&':
+                    case '~':
                     case '\'':
                         if (!curr.empty()) {
                             tokens.emplace_back(curr);
@@ -630,12 +632,7 @@ public:
         return tokens;
     }
 
-
-
-
-    int current_line_number = 0;
-
-
+    static int current_line_number;
     //function to interpret code, first string is string to interpret, second int is number of string
     static void interpret(
         const std::string &codeString,
@@ -750,7 +747,7 @@ public:
 
         }
         //printing value or any argument
-        else if (tokens[0] == "print") {
+        else if (tokens[0] == "print" || tokens[0] == "out") {
             const auto& name = tokens[1];
             if(ints.find(name) != ints.end()) {
                 cout << ints[name];
@@ -847,8 +844,20 @@ public:
             }
         }
         //for comment
-        else if(codeString.substr(0, 2) == "//") {}
-            //
+
+        else if(tokens[0] == "*") {
+            goto_points[tokens[1]] = line_num;
+        }
+        else if(tokens[0] == "~") {
+            if(goto_points.find(tokens[1]) != goto_points.end()) {
+                current_line_number = goto_points[tokens[1]];
+            }
+            else {
+                cerr << tokens[1] << " is not goto point" << endl;
+            }
+        }
+
+        else if(tokens[0] == "//") {}
         else{
             cerr << "Error in string: " << codeString << " number "<< line_num++ << endl;
             exit(1);
@@ -856,7 +865,6 @@ public:
         if(tokens[0] == "nln" || tokens[tokens.size()-1] == "nln") {
             cout << endl;
         }
-
     }
 };
 
