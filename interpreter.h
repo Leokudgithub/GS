@@ -27,14 +27,18 @@ class Interpreter {
     static map<string, float> floats;
     static map<string, double> doubles;
     static map<string, long long> long_longs;
+    static map<string, vector<int>>intarray;
+    static map<string, vector<char>> chararray;
+    static map<string, vector<long long>> longlongarray;
+    static map<string, vector<float>> floatarray;
+    static map<string, vector<double>> doublearray;
     //vector of variable names
     static vector<string> variables;
-    //returns a pair of name and value split by '='
-
+    //check is variable defined
     static bool define_check(const string &s) {
         return std::find(variables.begin(), variables.end(), s) != variables.end();
     }
-    // name1: t = name2 s:{+, -, /, *, %} name3
+    // name1: t = name2 s:{+, -, /, *, %, =, >, <} name3
     static void arithmetic_operators(const char t, char s, const string &name1, const string &name2, const string &name3) {
 
             if(s == '+') {
@@ -102,8 +106,6 @@ class Interpreter {
                         cerr << "sum of " << name2 << " and " << name3 << " is not supported" << endl;
                 }
             }
-
-
             else if(s == '-') {
                 switch (t) {
                     case 'i':
@@ -169,7 +171,6 @@ class Interpreter {
                         cerr << "subtraction of " << name2 << " and " << name3 << " is not supported" << endl;
                 }
             }
-
             else if(s == '*') {
                 switch (t) {
                     case 'i':
@@ -341,6 +342,201 @@ class Interpreter {
                     break;
                     default:
                         cerr << "sum of " << name2 << " and " << name3 << " is not supported" << endl;
+                }
+            }
+            else if(s == '=') {
+                switch (t) {
+                    case 'i':
+                        if(define_check(name2) && define_check(name3)) {
+                            ints[name1] = ints[name2] == ints[name3];
+                        }
+                        else if(define_check(name2) && !define_check(name3)) {
+                            ints[name1] = ints[name2] == stoi(name3);
+                        }
+                        else if(!define_check(name2) && define_check(name3)) {
+                            ints[name1] = stoi(name2) == ints[name3];
+                        }
+                        else {
+                            ints[name1] = stoi(name2) == stoi(name3);
+                        }
+                    break;
+                    case 'c':
+                        cerr << "char comparing is not supported" << endl;
+                    break;
+                    case 'f':
+                        if(define_check(name2) && define_check(name3)) {
+                            floats[name1] = floats[name2] == floats[name3];
+                        }
+                        else if(define_check(name2) && !define_check(name3)) {
+                            floats[name1] = floats[name2] == stof(name3);
+                        }
+                        else if(!define_check(name2) && define_check(name3)) {
+                            floats[name1] = stof(name2) == floats[name3];
+                        }
+                        else {
+                            floats[name1] = stof(name2) == stof(name3);
+                        }
+                    break;
+                    case 'd':
+                        if(define_check(name2) && define_check(name3)) {
+                            doubles[name1] = doubles[name2] == doubles[name3];
+                        }
+                        else if(define_check(name2) && !define_check(name3)) {
+                            doubles[name1] = doubles[name2] == stod(name3);
+                        }
+                        else if(!define_check(name2) && define_check(name3)) {
+                            doubles[name1] = stod(name2) == doubles[name3];
+                        }
+                        else {
+                            doubles[name1] = stod(name2) == stod(name3);
+                        }
+                    break;
+                    case 'l':
+                        if(define_check(name2) && define_check(name3)) {
+                            long_longs[name1] = long_longs[name2] == long_longs[name3];
+                        }
+                        else if(define_check(name2) && !define_check(name3)) {
+                            long_longs[name1] = long_longs[name2] == stoll(name3);
+                        }
+                        else if(!define_check(name2) && define_check(name3)) {
+                            long_longs[name1] = stoll(name2) == long_longs[name3];
+                        }
+                        else {
+                            long_longs[name1] = stoll(name2) == stoll(name3);
+                        }
+                    break;
+                    default:
+                        cerr << "comparing of " << name2 << " and " << name3 << " is not supported" << endl;
+                }
+            }
+            else if(s == '>') {
+                switch (t) {
+                    case 'i':
+                        if(define_check(name2) && define_check(name3)) {
+                            ints[name1] = ints[name2] > ints[name3];
+                        }
+                        else if(define_check(name2) && !define_check(name3)) {
+                            ints[name1] = ints[name2] > stoi(name3);
+                        }
+                        else if(!define_check(name2) && define_check(name3)) {
+                            ints[name1] = stoi(name2) > ints[name3];
+                        }
+                        else {
+                            ints[name1] = stoi(name2) > stoi(name3);
+                        }
+                    break;
+                    case 'c':
+                        cerr << "char comparing is not supported" << endl;
+                    break;
+                    case 'f':
+                        if(define_check(name2) && define_check(name3)) {
+                            floats[name1] = floats[name2] > floats[name3];
+                        }
+                        else if(define_check(name2) && !define_check(name3)) {
+                            floats[name1] = floats[name2] > stof(name3);
+                        }
+                        else if(!define_check(name2) && define_check(name3)) {
+                            floats[name1] = stof(name2) > floats[name3];
+                        }
+                        else {
+                            floats[name1] = stof(name2) > stof(name3);
+                        }
+                    break;
+                    case 'd':
+                        if(define_check(name2) && define_check(name3)) {
+                            doubles[name1] = doubles[name2] > doubles[name3];
+                        }
+                        else if(define_check(name2) && !define_check(name3)) {
+                            doubles[name1] = doubles[name2] > stod(name3);
+                        }
+                        else if(!define_check(name2) && define_check(name3)) {
+                            doubles[name1] = stod(name2) > doubles[name3];
+                        }
+                        else {
+                            doubles[name1] = stod(name2) > stod(name3);
+                        }
+                    break;
+                    case 'l':
+                        if(define_check(name2) && define_check(name3)) {
+                            long_longs[name1] = long_longs[name2] > long_longs[name3];
+                        }
+                        else if(define_check(name2) && !define_check(name3)) {
+                            long_longs[name1] = long_longs[name2] > stoll(name3);
+                        }
+                        else if(!define_check(name2) && define_check(name3)) {
+                            long_longs[name1] = stoll(name2) > long_longs[name3];
+                        }
+                        else {
+                            long_longs[name1] = stoll(name2) > stoll(name3);
+                        }
+                    break;
+                    default:
+                        cerr << "comparing of " << name2 << " and " << name3 << " is not supported" << endl;
+                }
+            }
+            else if(s == '<') {
+                switch (t) {
+                    case 'i':
+                        if(define_check(name2) && define_check(name3)) {
+                            ints[name1] = ints[name2] < ints[name3];
+                        }
+                        else if(define_check(name2) && !define_check(name3)) {
+                            ints[name1] = ints[name2] < stoi(name3);
+                        }
+                        else if(!define_check(name2) && define_check(name3)) {
+                            ints[name1] = stoi(name2) < ints[name3];
+                        }
+                        else {
+                            ints[name1] = stoi(name2) < stoi(name3);
+                        }
+                    break;
+                    case 'c':
+                        cerr << "char comparing is not supported" << endl;
+                    break;
+                    case 'f':
+                        if(define_check(name2) && define_check(name3)) {
+                            floats[name1] = floats[name2] < floats[name3];
+                        }
+                        else if(define_check(name2) && !define_check(name3)) {
+                            floats[name1] = floats[name2] < stof(name3);
+                        }
+                        else if(!define_check(name2) && define_check(name3)) {
+                            floats[name1] = stof(name2) < floats[name3];
+                        }
+                        else {
+                            floats[name1] = stof(name2) < stof(name3);
+                        }
+                    break;
+                    case 'd':
+                        if(define_check(name2) && define_check(name3)) {
+                            doubles[name1] = doubles[name2] < doubles[name3];
+                        }
+                        else if(define_check(name2) && !define_check(name3)) {
+                            doubles[name1] = doubles[name2] < stod(name3);
+                        }
+                        else if(!define_check(name2) && define_check(name3)) {
+                            doubles[name1] = stod(name2) < doubles[name3];
+                        }
+                        else {
+                            doubles[name1] = stod(name2) < stod(name3);
+                        }
+                    break;
+                    case 'l':
+                        if(define_check(name2) && define_check(name3)) {
+                            long_longs[name1] = long_longs[name2] < long_longs[name3];
+                        }
+                        else if(define_check(name2) && !define_check(name3)) {
+                            long_longs[name1] = long_longs[name2] < stoll(name3);
+                        }
+                        else if(!define_check(name2) && define_check(name3)) {
+                            long_longs[name1] = stoll(name2) < long_longs[name3];
+                        }
+                        else {
+                            long_longs[name1] = stoll(name2) < stoll(name3);
+                        }
+                    break;
+                    default:
+                        cerr << "comparing of " << name2 << " and " << name3 << " is not supported" << endl;
                 }
             }
             else {
@@ -624,11 +820,31 @@ public:
                 }
 
             }
-            else if(tokens.size() == 5) {
-                arithmetic_operators(find_type(tokens[0]), tokens[3][0], tokens[0], tokens[2], tokens[4]);
-
+            else if(tokens.size() == 4) {
+                if(tokens[2] == "!") {
+                    switch(find_type(tokens[0])) {
+                        case 'i':
+                            ints[tokens[0]] = !ints[tokens[3]];
+                        break;
+                        case 'c':
+                            cerr << "chars are not supported here" << endl;
+                        break;
+                        case 'f':
+                            floats[tokens[0]] = !static_cast<int>(floats[tokens[3]]);
+                        break;
+                        case 'd':
+                            doubles[tokens[0]] = !static_cast<int>(doubles[tokens[3]]);
+                        break;
+                        case 'l':
+                            long_longs[tokens[0]] = !long_longs[tokens[3]];
+                        default:
+                            cerr << tokens[0] << " and " << tokens[3] << " are not supported here" << endl;
+                    }
+                }
             }
-
+            else {
+                arithmetic_operators(find_type(tokens[0]), tokens[3][0], tokens[0], tokens[2], tokens[tokens.size()-1]);
+            }
         }
         //for comment
         else if(codeString.substr(0, 2) == "//") {}
