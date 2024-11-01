@@ -13,7 +13,7 @@ map<string, double> Interpreter::doubles;
 map<string, long long> Interpreter::long_longs;
 vector<string> Interpreter::variables;
 map<string, int> Interpreter::goto_points;
-int Interpreter::current_line_number;
+int Interpreter::current_line_number = 0;
 int main(int argc, char* argv[]) {
     if(argc == 3 && strcmp(argv[1], "run") == 0)
     {
@@ -23,32 +23,36 @@ int main(int argc, char* argv[]) {
             cerr << "file opening error" << std::endl;
             return 1;
         }
-        vector<std::string> code;
+        vector<string> code;
         string line;
         while (getline(file, line)) {
             code.push_back(line);
         }
         file.close();
         while (Interpreter::current_line_number < code.size()) {
-            Interpreter::interpret(code[Interpreter::current_line_number], Interpreter::current_line_number);
+            Interpreter::interpret(code, Interpreter::current_line_number);
             Interpreter::current_line_number++;
         }
     }
     else {
         cout << "testing mode \n";
         vector<string> code = {
-            "*p",
-            "i64 a",
-            "i64 b",
-            "get a",
-            "get b",
-            "i64 c",
-            "c = a + b",
-            "out c nln",
-            "~p"
+            "int counter = 1",
+            "int number",
+            "int square",
+            "int condition",
+            "get number",
+            "*loop",
+            "condition = counter < number",
+            "condition?",
+            "square = counter * counter",
+            "print square nln",
+            "counter = counter + 1",
+            "~loop",
+            "condition!"
         };
         while (Interpreter::current_line_number < code.size()) {
-            Interpreter::interpret(code[Interpreter::current_line_number], Interpreter::current_line_number);
+            Interpreter::interpret(code, Interpreter::current_line_number);
             Interpreter::current_line_number++;
         }
 

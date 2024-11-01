@@ -27,11 +27,6 @@ class Interpreter {
     static map<string, float> floats;
     static map<string, double> doubles;
     static map<string, long long> long_longs;
-    static map<string, vector<int>>intarray;
-    static map<string, vector<char>> chararray;
-    static map<string, vector<long long>> longlongarray;
-    static map<string, vector<float>> floatarray;
-    static map<string, vector<double>> doublearray;
     static map<string, int> goto_points;
     //vector of variable names
     static vector<string> variables;
@@ -635,10 +630,18 @@ public:
     static int current_line_number;
     //function to interpret code, first string is string to interpret, second int is number of string
     static void interpret(
-        const std::string &codeString,
+        const vector<std::string> &code,
         int line_num)
         {
+        const string& codeString = code[line_num];
         vector<string> tokens = tokenize(codeString);
+        /*for (const auto& el: tokens) {
+            cout << el << " ";
+        }
+        cout << endl;*/
+        //^
+        //| for debug
+
         //int variable creating
         if((tokens[0] == "int" || tokens[0] == "i32") && tokens[1] != "[") {
             if (tokens.size() > 2) {
@@ -846,7 +849,7 @@ public:
         //for comment
 
         else if(tokens[0] == "*") {
-            goto_points[tokens[1]] = line_num;
+            goto_points[tokens[1]] = current_line_number;
         }
         else if(tokens[0] == "~") {
             if(goto_points.find(tokens[1]) != goto_points.end()) {
@@ -856,10 +859,52 @@ public:
                 cerr << tokens[1] << " is not goto point" << endl;
             }
         }
-
-        else if(tokens[0] == "//") {}
+        else if(tokens[1] == "?") {
+            switch(find_type(tokens[0])) {
+                case 'i':
+                    if(!ints[tokens[0]]) {
+                        const string& name = tokens[0];
+                        while(tokenize(code[current_line_number])[0] != name || tokenize(code[current_line_number])[1] != "!"){
+                            current_line_number++;
+                        }
+                    }
+                break;
+                case 'f':
+                    if(!static_cast<int>(floats[tokens[0]])) {
+                        const string& name = tokens[0];
+                        while(tokenize(code[current_line_number])[0] != name || tokenize(codeString)[1] != "!") {
+                            current_line_number++;
+                        }
+                    }
+                break;
+                case 'd':
+                    if(!static_cast<int>(doubles[tokens[0]])) {
+                        const string& name = tokens[0];
+                        while(tokenize(code[current_line_number])[0] != name || tokenize(codeString)[1] != "!") {
+                            current_line_number++;
+                        }
+                    }
+                break;
+                case 'l':
+                    if(!static_cast<int>(long_longs[tokens[0]])) {
+                        const string& name = tokens[0];
+                        while(tokenize(code[current_line_number])[0] != name || tokenize(codeString)[1] != "!") {
+                            current_line_number++;
+                        }
+                    }
+                break;
+                default:
+                    cerr << tokens[0] << " not supported in if statement" << endl;
+            }
+        }
+        else if (tokens[1] == "!") {
+            if(!define_check(tokens[0])) {
+                cerr << tokens[0] << " is not defined" << endl;
+            }
+        }
+        else if(tokens[0] == "//" || tokens.empty()) {}
         else{
-            cerr << "Error in string: " << codeString << " number "<< line_num++ << endl;
+            cerr << "Error in string: " << codeString << " number "<< line_num++ << " can't handle" << endl;
             exit(1);
         }
         if(tokens[0] == "nln" || tokens[tokens.size()-1] == "nln") {
