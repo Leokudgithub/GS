@@ -1,1 +1,1 @@
-interpreting programming language
+interpreted programming language
